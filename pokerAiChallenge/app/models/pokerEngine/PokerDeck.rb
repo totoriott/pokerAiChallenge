@@ -64,8 +64,24 @@ class PokerHandEvaluator
 	def initialize
 	end
 
+	# returns a hash of {# of cards => [card values]}
+	def cardsGroupedByValue(hand)
+		handValues = hand.map{ |card| card.value }
+		grouped = handValues.group_by{ |value| handValues.count(value)}
+		finalGrouped = {}
+
+		grouped.each do |key, array|
+			array = array.uniq
+			finalGrouped[key] = array
+		end
+
+		finalGrouped
+	end
+
 	def evaluateHand(hand)
 		evaluation = ""
+
+		self.cardsGroupedByValue(hand)
 
 		print 'Hand: '
 		hand.each do |card|
@@ -80,8 +96,9 @@ end
 if __FILE__ == $0
 	handEvaluator = PokerHandEvaluator.new
 
-	deck = PokerDeck.new
-	hand = deck.dealHand(5)
-	handEvaluator.evaluateHand(hand)
-
+	for i in 0...5
+		deck = PokerDeck.new
+		hand = deck.dealHand(5)
+		handEvaluator.evaluateHand(hand)
+	end
 end
