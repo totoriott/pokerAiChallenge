@@ -78,12 +78,53 @@ class PokerHandEvaluator
 		finalGrouped
 	end
 
+	# returns a hash of {# of cards => [suit values]}
+	def cardsGroupedBySuit(hand)
+		handValues = hand.map{ |card| card.suit }
+		grouped = handValues.group_by{ |suit| handValues.count(suit)}
+		finalGrouped = {}
+
+		grouped.each do |key, array|
+			array = array.uniq
+			finalGrouped[key] = array
+		end
+
+		finalGrouped
+	end
+
+	def lengthOfLongestRunOfCards(hand)
+		maxRunLength = 0;
+		handValues = hand.map{ |card| card.value }
+
+		for i in 0..12 # this is a little inefficient due to repeats. sorry
+			runLength = 0
+
+			j = i
+			while j <= 13
+				if handValues.include? j or (j == 13 and handValues.include? 0) # ace wraparound
+					runLength += 1
+					if (runLength > maxRunLength)
+						maxRunLength = runLength
+					end
+				else 
+					break
+				end
+
+				j += 1;
+			end
+		end
+
+		maxRunLength
+	end
+
+	# note this assumes a 5 card poker hand
+	# todo: this will suck 1000x more with joker
 	def evaluateHand(hand)
 		evaluation = ""
 
 		groupedValues = self.cardsGroupedByValue(hand)
-
-		# todo: this will suck 1000x more with joker
+		groupedSuits = self.cardsGroupedBySuit(hand)
+		longestRunLength = self.lengthOfLongestRunOfCards(hand)
 
 		# one pair
 		if !groupedValues[2].nil?
@@ -101,8 +142,14 @@ class PokerHandEvaluator
 		end
 
 		# straight
+		if longestRunLength == 5
+			evaluation = "Straight"
+		end
 
 		# flush
+		if !groupedSuits[5].nil?
+			evaluation = "Flush"
+		end
 
 		# full house
 		if !groupedValues[2].nil? and !groupedValues[3].nil?
@@ -115,6 +162,9 @@ class PokerHandEvaluator
 		end
 
 		# straight flush
+		if !groupedSuits[5].nil? and longestRunLength == 5
+			evaluation = "Straight flush"
+		end
 
 		# five of a kind
 		if !groupedValues[5].nil?
@@ -122,6 +172,11 @@ class PokerHandEvaluator
 		end
 
 		# royal flush
+		if !groupedSuits[5].nil? and longestRunLength == 5
+			if groupedValues[1].include? 0 and groupedValues[1].include? 12 # if it has an A and K
+				evaluation = "Royal straight flush"
+			end
+		end
 
 		print 'Hand: '
 		hand.each do |card|
