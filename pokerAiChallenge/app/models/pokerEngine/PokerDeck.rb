@@ -10,16 +10,24 @@ class PokerCard
 			suitTypes = ['H', 'D', 'C', 'S']
 			cardTypes = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
-			'[' + cardTypes[@cardValue % 13] + suitTypes[@cardValue / 13] + ']'
+			'[' + cardTypes[self.value] + suitTypes[self.suit] + ']'
 		end
+	end
+
+	def suit
+		return @cardValue / 13
+	end
+
+	def value
+		return @cardValue % 13
 	end
 end
 
 class PokerDeck
-	# for now, we are assuming it's one deck, 52 cards + joker
+	# for now, we are assuming it's one deck, 52 cards, no joker
 	def initialize
 		@cards = []
-		for i in 0..52
+		for i in 0...52 # todo: add index 52 when you want joker
 			@cards.push(PokerCard.new(i))
 		end
 		self.shuffleDeck
@@ -52,9 +60,28 @@ class PokerDeck
 	end
 end
 
+class PokerHandEvaluator
+	def initialize
+	end
+
+	def evaluateHand(hand)
+		evaluation = ""
+
+		print 'Hand: '
+		hand.each do |card|
+			print card
+		end
+		print ' - ' + evaluation
+
+		puts 
+	end
+end
+
 if __FILE__ == $0
+	handEvaluator = PokerHandEvaluator.new
+
 	deck = PokerDeck.new
-	deck.printDeck
-	puts deck.dealHand(5)
-	deck.printDeck
+	hand = deck.dealHand(5)
+	handEvaluator.evaluateHand(hand)
+
 end
