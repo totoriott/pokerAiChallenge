@@ -21,13 +21,17 @@ class PokerCard
 	def value
 		return @cardValue % 13
 	end
+
+	def isJoker
+		return self.suit == 4
+	end
 end
 
 class PokerDeck
 	# for now, we are assuming it's one deck, 52 cards, no joker
 	def initialize
 		@cards = []
-		for i in 0...52 # todo: add index 52 when you want joker
+		for i in 0..52
 			@cards.push(PokerCard.new(i))
 		end
 		self.shuffleDeck
@@ -72,9 +76,10 @@ class PokerHandEvaluator
 	HAND_EVALUATIONS_STRAIGHT_FLUSH = 8
 	HAND_EVALUATIONS_FIVE_OF_A_KIND = 9
 	HAND_EVALUATIONS_ROYAL_FLUSH = 10
+	HAND_EVALUATIONS_ROYAL_FLUSH_NATURAL = 11
 	NAME_HAND_EVALUATIONS = ["Nothing", "One Pair", "Two Pair", "Three of a Kind", 
 		"Straight", "Flush", "Full House", "Four of a Kind", 
-		"Five of a Kind", "Straight Flush", "Royal Straight Flush"]
+		"Five of a Kind", "Straight Flush", "Royal Straight Flush", "Natural Royal Straight Flush"]
 
 	def initialize
 	end
@@ -132,9 +137,44 @@ class PokerHandEvaluator
 		maxRunLength
 	end
 
-	# note this assumes a 5 card poker hand
-	# todo: this will suck 1000x more with joker
 	def evaluateHand(hand)
+		hasJoker = false;
+		hand.each do |card|
+			if card.suit == 4
+				hasJoker = true
+			end
+		end
+
+		if hasJoker
+			bestEvaluation = HAND_EVALUATIONS_NOTHING
+
+			# consider the joker as every possible card in the deck
+			newDeck = PokerDeck.new
+			cardGiven = newDeck.dealCard
+			while cardGiven	and !cardGiven.isJoker
+				handWithoutJoker = hand.select { |card| card.isJoker == false }
+				handWithoutJoker.push(cardGiven)
+
+				evaluation = self.evaluateHandWithoutJoker(handWithoutJoker)
+				if evaluation == HAND_EVALUATIONS_ROYAL_FLUSH_NATURAL
+					evaluation = HAND_EVALUATIONS_ROYAL_FLUSH
+				end
+
+				if (evaluation > bestEvaluation)
+					bestEvaluation = evaluation
+				end
+
+				cardGiven = newDeck.dealCard	
+			end
+
+			bestEvaluation
+		else 
+			self.evaluateHandWithoutJoker(hand)
+		end
+	end
+
+	# note this assumes a 5 card poker hand
+	def evaluateHandWithoutJoker(hand)
 		evaluation = HAND_EVALUATIONS_NOTHING
 
 		groupedValues = self.cardsGroupedByValue(hand)
@@ -189,7 +229,7 @@ class PokerHandEvaluator
 		# royal flush
 		if !groupedSuits[5].nil? and longestRunLength == 5
 			if groupedValues[1].include? 0 and groupedValues[1].include? 12 # if it has an A and K
-				evaluation = HAND_EVALUATIONS_ROYAL_FLUSH
+				evaluation = HAND_EVALUATIONS_ROYAL_FLUSH_NATURAL
 			end
 		end
 
