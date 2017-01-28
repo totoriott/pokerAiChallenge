@@ -1,3 +1,4 @@
+require_relative 'AiModel'
 require_relative 'CasinoEngine'
 require_relative 'PokerCard'
 require_relative 'PokerDeck'
@@ -21,8 +22,9 @@ def testEvaluatingHands
 	end
 end
 
-def testCasinoEngine
+def testCasinoEngineWithAi
 	casino = CasinoEngine.new
+	aiModel = AiModel.new([])
 
 	for i in 0...10
 		hand = casino.startHand
@@ -33,6 +35,7 @@ def testCasinoEngine
 		end
 		print ' | '
 
+		hand = aiModel.getKeptCards(hand)
 		hand = casino.fillHand(hand)
 
 		print 'After: '
@@ -43,10 +46,9 @@ def testCasinoEngine
 		print ' - ' + casino.betMultiplierForHand(hand).to_s
 
 		puts
-		puts
 	end
 end
 
 if __FILE__ == $0
-	testCasinoEngine
+	testCasinoEngineWithAi
 end
