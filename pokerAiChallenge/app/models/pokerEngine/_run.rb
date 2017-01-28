@@ -1,4 +1,5 @@
 require_relative 'AiModel'
+require_relative 'AiSimulation'
 require_relative 'CasinoEngine'
 require_relative 'PokerCard'
 require_relative 'PokerDeck'
@@ -26,27 +27,8 @@ def testCasinoEngineWithAi
 	casino = CasinoEngine.new
 	aiModel = AiModel.new([])
 
-	for i in 0...10
-		hand = casino.startHand
-
-		print 'Before: '
-		hand.each do |card|
-			print card
-		end
-		print ' | '
-
-		hand = aiModel.getKeptCards(hand)
-		hand = casino.fillHand(hand)
-
-		print 'After: '
-		hand.each do |card|
-			print card
-		end
-
-		print ' - ' + casino.betMultiplierForHand(hand).to_s
-
-		puts
-	end
+	aiSimulation = AiSimulation.new
+	aiSimulation.runSimulation(aiModel, casino, 10000, false)
 end
 
 if __FILE__ == $0
