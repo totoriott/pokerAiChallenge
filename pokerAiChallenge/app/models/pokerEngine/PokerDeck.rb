@@ -61,6 +61,21 @@ class PokerDeck
 end
 
 class PokerHandEvaluator
+	HAND_EVALUATIONS_NOTHING = 0
+	HAND_EVALUATIONS_ONE_PAIR = 1
+	HAND_EVALUATIONS_TWO_PAIR = 2
+	HAND_EVALUATIONS_THREE_OF_A_KIND = 3
+	HAND_EVALUATIONS_STRAIGHT = 4
+	HAND_EVALUATIONS_FLUSH = 5
+	HAND_EVALUATIONS_FULL_HOUSE = 6
+	HAND_EVALUATIONS_FOUR_OF_A_KIND = 7
+	HAND_EVALUATIONS_STRAIGHT_FLUSH = 8
+	HAND_EVALUATIONS_FIVE_OF_A_KIND = 9
+	HAND_EVALUATIONS_ROYAL_FLUSH = 10
+	NAME_HAND_EVALUATIONS = ["Nothing", "One Pair", "Two Pair", "Three of a Kind", 
+		"Straight", "Flush", "Full House", "Four of a Kind", 
+		"Five of a Kind", "Straight Flush", "Royal Straight Flush"]
+
 	def initialize
 	end
 
@@ -120,7 +135,7 @@ class PokerHandEvaluator
 	# note this assumes a 5 card poker hand
 	# todo: this will suck 1000x more with joker
 	def evaluateHand(hand)
-		evaluation = ""
+		evaluation = HAND_EVALUATIONS_NOTHING
 
 		groupedValues = self.cardsGroupedByValue(hand)
 		groupedSuits = self.cardsGroupedBySuit(hand)
@@ -128,63 +143,57 @@ class PokerHandEvaluator
 
 		# one pair
 		if !groupedValues[2].nil?
-			evaluation = "One pair"
+			evaluation = HAND_EVALUATIONS_ONE_PAIR
 		end
 
 		# two pair
 		if !groupedValues[2].nil? and groupedValues[2].length == 2
-			evaluation = "Two pair"
+			evaluation = HAND_EVALUATIONS_TWO_PAIR
 		end
 
 		# three of a kind
 		if !groupedValues[3].nil?
-			evaluation = "Three of a kind"
+			evaluation = HAND_EVALUATIONS_THREE_OF_A_KIND
 		end
 
 		# straight
 		if longestRunLength == 5
-			evaluation = "Straight"
+			evaluation = HAND_EVALUATIONS_STRAIGHT
 		end
 
 		# flush
 		if !groupedSuits[5].nil?
-			evaluation = "Flush"
+			evaluation = HAND_EVALUATIONS_FLUSH
 		end
 
 		# full house
 		if !groupedValues[2].nil? and !groupedValues[3].nil?
-			evaluation = "Full house"
+			evaluation = HAND_EVALUATIONS_FULL_HOUSE
 		end
 
 		# four of a kind
 		if !groupedValues[4].nil?
-			evaluation = "Four of a kind"
+			evaluation = HAND_EVALUATIONS_FOUR_OF_A_KIND
 		end
 
 		# straight flush
 		if !groupedSuits[5].nil? and longestRunLength == 5
-			evaluation = "Straight flush"
+			evaluation = HAND_EVALUATIONS_STRAIGHT_FLUSH
 		end
 
 		# five of a kind
 		if !groupedValues[5].nil?
-			evaluation = "Five of a kind"
+			evaluation = HAND_EVALUATIONS_FIVE_OF_A_KIND
 		end
 
 		# royal flush
 		if !groupedSuits[5].nil? and longestRunLength == 5
 			if groupedValues[1].include? 0 and groupedValues[1].include? 12 # if it has an A and K
-				evaluation = "Royal straight flush"
+				evaluation = HAND_EVALUATIONS_ROYAL_FLUSH
 			end
 		end
 
-		print 'Hand: '
-		hand.each do |card|
-			print card
-		end
-		print ' - ' + evaluation
-
-		puts 
+		return evaluation
 	end
 end
 
@@ -194,6 +203,14 @@ if __FILE__ == $0
 	for i in 0...10
 		deck = PokerDeck.new
 		hand = deck.dealHand(5)
-		handEvaluator.evaluateHand(hand)
+		evaluation = handEvaluator.evaluateHand(hand)
+
+		print 'Hand: '
+		hand.each do |card|
+			print card
+		end
+		print ' - ' + PokerHandEvaluator::NAME_HAND_EVALUATIONS[evaluation]
+
+		puts 
 	end
 end
