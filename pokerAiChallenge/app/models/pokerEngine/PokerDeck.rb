@@ -26,6 +26,8 @@ class PokerDeck
 	end
 
 	def printDeck
+		# note that the deck is dealt from the back
+		# we could get around this by reversing the deck before printing or dealing
 		print 'Deck: '
 		@cards.each do |card|
 			print card
@@ -36,9 +38,23 @@ class PokerDeck
 	def shuffleDeck
 		@cards = @cards.shuffle
 	end
+
+	def dealCard
+		@cards.pop
+	end
+
+	def dealHand(handSize)
+		hand = []
+		for i in 0...handSize
+			hand.push(self.dealCard)
+		end
+		hand
+	end
 end
 
 if __FILE__ == $0
 	deck = PokerDeck.new
+	deck.printDeck
+	puts deck.dealHand(5)
 	deck.printDeck
 end
