@@ -81,7 +81,47 @@ class PokerHandEvaluator
 	def evaluateHand(hand)
 		evaluation = ""
 
-		self.cardsGroupedByValue(hand)
+		groupedValues = self.cardsGroupedByValue(hand)
+
+		# todo: this will suck 1000x more with joker
+
+		# one pair
+		if !groupedValues[2].nil?
+			evaluation = "One pair"
+		end
+
+		# two pair
+		if !groupedValues[2].nil? and groupedValues[2].length == 2
+			evaluation = "Two pair"
+		end
+
+		# three of a kind
+		if !groupedValues[3].nil?
+			evaluation = "Three of a kind"
+		end
+
+		# straight
+
+		# flush
+
+		# full house
+		if !groupedValues[2].nil? and !groupedValues[3].nil?
+			evaluation = "Full house"
+		end
+
+		# four of a kind
+		if !groupedValues[4].nil?
+			evaluation = "Four of a kind"
+		end
+
+		# straight flush
+
+		# five of a kind
+		if !groupedValues[5].nil?
+			evaluation = "Five of a kind"
+		end
+
+		# royal flush
 
 		print 'Hand: '
 		hand.each do |card|
@@ -96,7 +136,7 @@ end
 if __FILE__ == $0
 	handEvaluator = PokerHandEvaluator.new
 
-	for i in 0...5
+	for i in 0...10
 		deck = PokerDeck.new
 		hand = deck.dealHand(5)
 		handEvaluator.evaluateHand(hand)
