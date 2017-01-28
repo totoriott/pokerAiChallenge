@@ -27,13 +27,23 @@ def testCasinoEngine
 	for i in 0...10
 		hand = casino.startHand
 
-		print 'Hand: '
+		print 'Before: '
 		hand.each do |card|
 			print card
 		end
+		print ' | '
+
+		hand = casino.fillHand(hand)
+
+		print 'After: '
+		hand.each do |card|
+			print card
+		end
+
 		print ' - ' + casino.betMultiplierForHand(hand).to_s
 
-		puts 
+		puts
+		puts
 	end
 end
 

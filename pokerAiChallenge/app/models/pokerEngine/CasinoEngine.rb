@@ -34,4 +34,12 @@ class CasinoEngine
 
 		@curDeck.dealHand(5)
 	end
+
+	# fills hand back up to full (i.e. after discarding)
+	def fillHand(hand)
+		while hand.length < 5
+			hand.push(@curDeck.dealCard)
+		end
+		hand
+	end
 end
