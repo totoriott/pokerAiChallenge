@@ -74,9 +74,9 @@ class AiSimulation
 		puts
 		print (100.0*winningHands/handCount).to_s + "% win percentage"
 		puts
-		print (100.0*doubleSuccesses/doubleTries).to_s + "% double win percentage (" + doubleSuccesses.to_s + "/" + doubleTries.to_s + ")"
+		print (100.0*doubleSuccesses/doubleTries).round(2).to_s + "% double win percentage (" + doubleSuccesses.to_s + "/" + doubleTries.to_s + ")"
 		puts
-		print (100.0*doubleOverallSuccesses/doubleOverallTries).to_s + "% double runs ended in payout (" + doubleOverallSuccesses.to_s + "/" + doubleOverallTries.to_s + ")"
+		print (100.0*doubleOverallSuccesses/doubleOverallTries).round(2).to_s + "% double runs ended in payout (" + doubleOverallSuccesses.to_s + "/" + doubleOverallTries.to_s + ")"
 		puts
 	end
 end
