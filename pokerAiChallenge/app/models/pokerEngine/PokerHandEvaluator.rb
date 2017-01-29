@@ -83,7 +83,7 @@ class PokerHandEvaluator
 			bestEvaluation = HAND_EVALUATIONS_NOTHING
 
 			# consider the joker as every possible card in the deck
-			newDeck = PokerDeck.new
+			newDeck = PokerDeck.new(true)
 			cardGiven = newDeck.dealCard
 			while cardGiven	and !cardGiven.isJoker
 				handWithoutJoker = hand.select { |card| card.isJoker == false }

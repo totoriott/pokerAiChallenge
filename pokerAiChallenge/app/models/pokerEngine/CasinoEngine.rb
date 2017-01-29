@@ -21,6 +21,9 @@ class CasinoEngine
 		PokerHandEvaluator::HAND_EVALUATIONS_ROYAL_FLUSH_NATURAL => 250
 	}
 
+	DOUBLE_UP_ROUND_LIMIT = 10
+	DOUBLE_UP_WINNINGS_LIMIT = 1500000 # can start a new double up if you're below this
+
 	def betMultiplierForHand(hand)
 		handEvaluator = PokerHandEvaluator.new
 		evaluation = handEvaluator.evaluateHand(hand)
@@ -30,7 +33,9 @@ class CasinoEngine
 
 	# creates a new deck and deals the player a hand
 	def startHand
-		@curDeck = PokerDeck.new 
+		@curDeck = PokerDeck.new(true)
+		@doubleDeck = PokerDeck.new(false)
+		@doubleCard = nil
 
 		@curDeck.dealHand(5)
 	end

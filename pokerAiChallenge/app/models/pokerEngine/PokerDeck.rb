@@ -1,8 +1,12 @@
 class PokerDeck
-	# for now, we are assuming it's one deck, 52 cards, no joker
-	def initialize
+	# for now, we are assuming it's one deck, 52 cards, maybe joker
+	def initialize(addJoker)
 		@cards = []
-		for i in 0..52
+		maxValue = 51
+		if addJoker
+			maxValue = 52
+		end
+		for i in 0..maxValue
 			@cards.push(PokerCard.new(i))
 		end
 		self.shuffleDeck
