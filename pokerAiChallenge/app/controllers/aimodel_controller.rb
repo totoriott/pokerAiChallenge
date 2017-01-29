@@ -1,0 +1,2 @@
+class AimodelController < ApplicationController
+end
