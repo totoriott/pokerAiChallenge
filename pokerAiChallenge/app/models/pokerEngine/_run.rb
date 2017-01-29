@@ -28,7 +28,7 @@ def testCasinoEngineWithAi
 	aiModel = AiModel.new([])
 
 	aiSimulation = AiSimulation.new
-	aiSimulation.runSimulation(aiModel, casino, 10000, false)
+	aiSimulation.runSimulation(aiModel, casino, 100000, false)
 end
 
 if __FILE__ == $0

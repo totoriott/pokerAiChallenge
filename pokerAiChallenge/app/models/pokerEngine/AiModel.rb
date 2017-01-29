@@ -1,8 +1,10 @@
 require_relative 'CasinoEngine'
+require_relative 'PokerHandEvaluator'
 
 class AiRule
 	RULE_TYPE_JOKER = 0;
 	RULE_TYPE_HAND_OF_VALUE = 1;
+	RULE_TYPE_SAME_SUIT = 2;
 
 	AI_ACTION_KEEP_AND_CONTINUE = 0;
 	AI_ACTION_KEEP_AND_STOP = 1;
@@ -33,7 +35,12 @@ class AiModel
 		# testing
 		# todo: joker won't mesh properly with other rules yet
 		@rules.push(AiRule.new(AiRule::RULE_TYPE_HAND_OF_VALUE, 1, AiRule::AI_ACTION_KEEP_AND_STOP))
+		#@rules.push(AiRule.new(AiRule::RULE_TYPE_SAME_SUIT, 4, AiRule::AI_ACTION_KEEP_AND_STOP))
 		@rules.push(AiRule.new(AiRule::RULE_TYPE_JOKER, 1, AiRule::AI_ACTION_KEEP_AND_STOP))
+	end
+
+	def cardsInHandOfSuit(hand, suit)
+		hand.select { |card| card.suit == suit }
 	end
 
 	def cardsThatMatchRule(hand, rule)
@@ -54,6 +61,16 @@ class AiModel
 			else
 				[]
 			end
+		when AiRule::RULE_TYPE_SAME_SUIT
+			handEvaluator = PokerHandEvaluator.new
+			groupedSuits = handEvaluator.cardsGroupedBySuit(hand)
+			if !groupedSuits[rule.count].nil?
+				# todo: handle if you have multiple such cases
+				suit = groupedSuits[rule.count][0]
+				cardsInHandOfSuit(hand, suit)
+			else
+				[]
+			end
 		else
 			[]
 		end
@@ -65,7 +82,10 @@ class AiModel
 
 		@rules.each do |rule|
 			matchCards = cardsThatMatchRule(hand, rule)
-			if matchCards.length >= 0
+			if matchCards.length > 0
+				# todo: uncomment if you wanna make sure you're saving cards ok
+				#puts matchCards
+				#puts
 				if rule.action == AiRule::AI_ACTION_KEEP_AND_CONTINUE
 					# todo: implement
 					ok = 2
