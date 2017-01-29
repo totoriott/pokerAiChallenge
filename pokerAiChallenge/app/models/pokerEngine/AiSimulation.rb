@@ -23,10 +23,20 @@ class AiSimulation
 			hand = aiModel.getKeptCards(hand)
 			hand = casinoEngine.fillHand(hand)
 			payout = casinoEngine.betMultiplierForHand(hand)
-			totalPayout += payout
+
 			if payout > 0
 				winningHands += 1
+
+				while payout > 0 and casinoEngine.canDoubleUp and aiModel.shouldDoubleUp(payout, casinoEngine.doubleCard, casinoEngine.doubleAttempt)
+					casinoEngine.prepareDoubleCardIfNone
+
+					action = aiModel.getDoubleUpAction(payout, casinoEngine.doubleCard)
+					payout *= casinoEngine.performDoubleUp(action)
+				end
+				# todo: calculate average time you win doubles
 			end
+
+			totalPayout += payout
 
 			if printHands
 				print 'After: '

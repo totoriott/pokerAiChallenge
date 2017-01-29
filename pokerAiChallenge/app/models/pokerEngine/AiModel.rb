@@ -31,6 +31,9 @@ class AiRule
 end
 
 class AiModel
+	DOUBLE_ACTION_LOWER = 0
+	DOUBLE_ACTION_HIGHER = 1
+
 	def initialize(myRules)
 		@rules = myRules
 
@@ -146,5 +149,22 @@ class AiModel
 		end
 
 		keptHand
+	end
+
+	def shouldDoubleUp(winnings, visibleCard, doubleRound)
+		if visibleCard.nil?
+			true
+		else
+			visibleCard.value < 5 or visibleCard.value > 9 # TODO
+		end
+	end
+
+	def getDoubleUpAction(winnings, visibleCard) 
+		if (visibleCard.value < 8)
+			DOUBLE_ACTION_HIGHER 
+		else
+			DOUBLE_ACTION_LOWER
+		end
+		# TODO
 	end
 end

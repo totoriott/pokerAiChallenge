@@ -36,6 +36,7 @@ class CasinoEngine
 		@curDeck = PokerDeck.new(true)
 		@doubleDeck = PokerDeck.new(false)
 		@doubleCard = nil
+		@doubleAttempt = 0
 
 		@curDeck.dealHand(5)
 	end
@@ -46,5 +47,57 @@ class CasinoEngine
 			hand.push(@curDeck.dealCard)
 		end
 		hand
+	end
+
+	def doubleCard
+		@doubleCard
+	end
+
+	def doubleAttempt
+		@doubleAttempt
+	end
+
+	def canDoubleUp
+		@doubleAttempt < DOUBLE_UP_ROUND_LIMIT
+	end
+
+	def prepareDoubleCardIfNone
+		if @doubleCard.nil?
+			@doubleCard = @doubleDeck.dealCard
+		end
+	end
+
+	def performDoubleUp(action)
+		@doubleAttempt += 1
+
+		newDoubleCard = @doubleDeck.dealCard
+
+		# should have made aces "actually" 13 oops
+		oldValue = @doubleCard.value
+		if (oldValue == 0)
+			oldValue = 13
+		end
+		newValue = newDoubleCard.value
+		if (newValue == 0)
+			newValue = 13
+		end
+
+		@doubleCard = newDoubleCard
+		
+		if (oldValue == newValue)
+			1
+		elsif (newValue > oldValue)
+			if (action == AiModel::DOUBLE_ACTION_HIGHER)
+				0
+			else
+				2
+			end
+		elsif (newValue < oldValue)
+			if (action == AiModel::DOUBLE_ACTION_LOWER)
+				0
+			else
+				2
+			end
+		end	
 	end
 end
