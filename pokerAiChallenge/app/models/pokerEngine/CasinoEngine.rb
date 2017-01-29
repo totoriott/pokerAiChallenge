@@ -88,15 +88,15 @@ class CasinoEngine
 			1
 		elsif (newValue > oldValue)
 			if (action == AiModel::DOUBLE_ACTION_HIGHER)
-				0
-			else
 				2
+			else
+				0
 			end
 		elsif (newValue < oldValue)
 			if (action == AiModel::DOUBLE_ACTION_LOWER)
-				0
-			else
 				2
+			else
+				0
 			end
 		end	
 	end

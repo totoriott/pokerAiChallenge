@@ -155,7 +155,7 @@ class AiModel
 		if visibleCard.nil?
 			true
 		else
-			visibleCard.value < 5 or visibleCard.value > 9 # TODO
+			winnings < 128 or visibleCard.value < 5 or visibleCard.value > 9 # TODO
 		end
 	end
 
