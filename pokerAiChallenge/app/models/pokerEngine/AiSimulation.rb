@@ -27,7 +27,7 @@ class AiSimulation
 			if payout > 0
 				winningHands += 1
 
-				while payout > 0 and casinoEngine.canDoubleUp and aiModel.shouldDoubleUp(payout, casinoEngine.doubleCard, casinoEngine.doubleAttempt)
+				while payout > 0 and casinoEngine.canDoubleUp(payout) and aiModel.shouldDoubleUp(payout, casinoEngine.doubleCard, casinoEngine.doubleAttempt)
 					casinoEngine.prepareDoubleCardIfNone
 
 					action = aiModel.getDoubleUpAction(payout, casinoEngine.doubleCard)

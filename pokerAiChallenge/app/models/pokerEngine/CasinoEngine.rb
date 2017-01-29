@@ -57,8 +57,8 @@ class CasinoEngine
 		@doubleAttempt
 	end
 
-	def canDoubleUp
-		@doubleAttempt < DOUBLE_UP_ROUND_LIMIT
+	def canDoubleUp(payout)
+		@doubleAttempt < DOUBLE_UP_ROUND_LIMIT and payout < DOUBLE_UP_WINNINGS_LIMIT
 	end
 
 	def prepareDoubleCardIfNone

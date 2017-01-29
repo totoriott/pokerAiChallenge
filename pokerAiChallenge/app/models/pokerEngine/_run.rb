@@ -25,7 +25,7 @@ end
 
 def testCasinoEngineWithAi
 	casino = CasinoEngine.new
-	aiModel = AiModel.new([])
+	aiModel = AiModel.new([], [])
 
 	aiSimulation = AiSimulation.new
 	aiSimulation.runSimulation(aiModel, casino, 10000, false)

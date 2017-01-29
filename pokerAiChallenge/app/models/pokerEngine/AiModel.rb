@@ -30,12 +30,41 @@ class AiRule
 	end
 end
 
+class AiDoubleRule
+	DOUBLE_RULE_TYPE_WINNINGS_BELOW = 0
+	DOUBLE_RULE_TYPE_CARD_BELOW = 1
+	DOUBLE_RULE_TYPE_CARD_ABOVE = 2
+	DOUBLE_RULE_TYPE_ROUND_BELOW = 3
+
+	DOUBLE_AI_ACTION_MANDATORY = 0
+	DOUBLE_AI_ACTION_GO_IF_TRUE = 1
+
+	def initialize(myRuleType, myCount, myAction)
+		@ruleType = myRuleType
+		@count = myCount
+		@action = myAction
+	end
+
+	def ruleType
+		@ruleType
+	end
+
+	def count
+		@count
+	end
+
+	def action
+		@action
+	end
+end
+
 class AiModel
 	DOUBLE_ACTION_LOWER = 0
 	DOUBLE_ACTION_HIGHER = 1
 
-	def initialize(myRules)
+	def initialize(myRules, myDoubleRules)
 		@rules = myRules
+		@doubleRules = myDoubleRules
 
 		# testing
 		# todo: joker won't mesh properly with other rules yet
@@ -44,6 +73,11 @@ class AiModel
 		@rules.push(AiRule.new(AiRule::RULE_TYPE_SAME_VALUE, 2, AiRule::AI_ACTION_KEEP_AND_CONTINUE))
 		@rules.push(AiRule.new(AiRule::RULE_TYPE_RUN_OF_LENGTH, 4, AiRule::AI_ACTION_KEEP_AND_CONTINUE))
 		@rules.push(AiRule.new(AiRule::RULE_TYPE_JOKER, 1, AiRule::AI_ACTION_KEEP_AND_STOP))
+		
+		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_WINNINGS_BELOW, 32, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))
+		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_ROUND_BELOW, 1, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))
+		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_CARD_BELOW, 6, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))
+		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_CARD_ABOVE, 9, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))
 	end
 
 	# todo: maybe these can be moved
@@ -152,11 +186,39 @@ class AiModel
 	end
 
 	def shouldDoubleUp(winnings, visibleCard, doubleRound)
-		if visibleCard.nil?
-			true
-		else
-			winnings < 128 or visibleCard.value < 5 or visibleCard.value > 9 # TODO
+		mandatoryOk = true
+		goIfTrue = false
+
+		@doubleRules.each do |rule|
+			ruleSuccess = false
+
+			if rule.ruleType == AiDoubleRule::DOUBLE_RULE_TYPE_WINNINGS_BELOW
+				ruleSuccess = winnings < rule.count
+			elsif rule.ruleType == AiDoubleRule::DOUBLE_RULE_TYPE_CARD_BELOW
+				if !visibleCard.nil?
+					ruleSuccess = visibleCard.value < rule.count
+				elsif rule.action == AiDoubleRule::DOUBLE_AI_ACTION_MANDATORY
+					ruleSuccess = true # don't fail mandatory if it's first round
+				end
+			elsif rule.ruleType == AiDoubleRule::DOUBLE_RULE_TYPE_CARD_ABOVE
+				if !visibleCard.nil?
+					ruleSuccess = visibleCard.value > rule.count
+				elsif rule.action == AiDoubleRule::DOUBLE_AI_ACTION_MANDATORY
+					ruleSuccess = true # don't fail mandatory if it's first round
+				end
+			elsif rule.ruleType == AiDoubleRule::DOUBLE_RULE_TYPE_ROUND_BELOW
+				ruleSuccess = doubleRound < rule.count
+			end
+
+			if ruleSuccess and rule.action == AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE
+				goIfTrue = true
+			end
+			if !ruleSuccess and rule.action == AiDoubleRule::DOUBLE_AI_ACTION_MANDATORY
+				mandatoryOk = false
+			end
 		end
+
+		mandatoryOk and goIfTrue
 	end
 
 	def getDoubleUpAction(winnings, visibleCard) 
