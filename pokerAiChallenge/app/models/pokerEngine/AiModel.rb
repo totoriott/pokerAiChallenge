@@ -6,6 +6,7 @@ class AiRule
 	RULE_TYPE_HAND_OF_VALUE = 1;
 	RULE_TYPE_SAME_SUIT = 2;
 	RULE_TYPE_SAME_VALUE = 3;
+	RULE_TYPE_RUN_OF_LENGTH = 4;
 
 	AI_ACTION_KEEP_AND_CONTINUE = 0;
 	AI_ACTION_KEEP_AND_STOP = 1;
@@ -35,9 +36,10 @@ class AiModel
 
 		# testing
 		# todo: joker won't mesh properly with other rules yet
-		@rules.push(AiRule.new(AiRule::RULE_TYPE_HAND_OF_VALUE, 1, AiRule::AI_ACTION_KEEP_AND_STOP))
-		@rules.push(AiRule.new(AiRule::RULE_TYPE_SAME_SUIT, 4, AiRule::AI_ACTION_KEEP_AND_STOP))
-		@rules.push(AiRule.new(AiRule::RULE_TYPE_SAME_VALUE, 2, AiRule::AI_ACTION_KEEP_AND_STOP))
+		@rules.push(AiRule.new(AiRule::RULE_TYPE_HAND_OF_VALUE, 1, AiRule::AI_ACTION_KEEP_AND_CONTINUE))
+		@rules.push(AiRule.new(AiRule::RULE_TYPE_SAME_SUIT, 4, AiRule::AI_ACTION_KEEP_AND_CONTINUE))
+		@rules.push(AiRule.new(AiRule::RULE_TYPE_SAME_VALUE, 2, AiRule::AI_ACTION_KEEP_AND_CONTINUE))
+		@rules.push(AiRule.new(AiRule::RULE_TYPE_RUN_OF_LENGTH, 4, AiRule::AI_ACTION_KEEP_AND_CONTINUE))
 		@rules.push(AiRule.new(AiRule::RULE_TYPE_JOKER, 1, AiRule::AI_ACTION_KEEP_AND_STOP))
 	end
 
@@ -48,6 +50,27 @@ class AiModel
 
 	def cardsInHandOfValue(hand, value)
 		hand.select { |card| card.value == value }
+	end
+
+	def runOfLengthInHand(hand, length)
+		result = []
+		for i in 0..12
+			startRun = i
+			endRun = i + (length-1)
+			# TODO: fix this to only pull one of each card (i.e. 2345, not 23445)
+			if endRun == 13 # Ace, wraparound
+				attempt = hand.select { |card| (card.value >= startRun and card.value <= endRun) or (card.value == 0 and !card.isJoker) }
+				if attempt.length == length
+					result = attempt
+				end
+			elsif endRun < 13
+				attempt = hand.select { |card| card.value >= startRun and card.value <= endRun }
+				if attempt.length == length
+					result = attempt
+				end
+			end
+		end
+		result
 	end
 
 	def cardsThatMatchRule(hand, rule)
@@ -88,6 +111,14 @@ class AiModel
 			else
 				[]
 			end
+		when AiRule::RULE_TYPE_RUN_OF_LENGTH
+			handEvaluator = PokerHandEvaluator.new
+			longestRunLength = handEvaluator.lengthOfLongestRunOfCards(hand)
+			if longestRunLength == rule.count
+				runOfLengthInHand(hand, rule.count)
+			else
+				[]
+			end
 		else
 			[]
 		end
@@ -104,9 +135,10 @@ class AiModel
 				#puts matchCards
 				#puts
 				if rule.action == AiRule::AI_ACTION_KEEP_AND_CONTINUE
-					# todo: implement
-					ok = 2
+					hand = hand - matchCards
+					keptHand += matchCards
 				elsif rule.action == AiRule::AI_ACTION_KEEP_AND_STOP
+					hand = hand - matchCards
 					keptHand += matchCards
 					break
 				end
