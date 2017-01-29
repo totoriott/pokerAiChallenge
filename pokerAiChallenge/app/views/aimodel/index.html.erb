@@ -1,2 +1,12 @@
 <h1>Aimodel#index !</h1>
-<p> <%= @testing %></p>
+Total payout <%= @aiSimulation.totalPayout %> over <%= @aiSimulation.handCount %> hands.
+<br>
+print winningHands.to_s + " winning hands in " + handCount.to_s + " hands."
+<br>
+print (1.0*totalPayout/handCount).to_s + " average payout"
+<br>
+print (100.0*winningHands/handCount).to_s + "% win percentage"
+<br>
+print (100.0*doubleSuccesses/doubleTries).round(2).to_s + "% double win percentage (" + doubleSuccesses.to_s + "/" + doubleTries.to_s + ")"
+<br>
+print (100.0*doubleOverallSuccesses/doubleOverallTries).round(2).to_s + "% double runs ended in payout (" + doubleOverallSuccesses.to_s + "/" + doubleOverallTries.to_s + ")"
