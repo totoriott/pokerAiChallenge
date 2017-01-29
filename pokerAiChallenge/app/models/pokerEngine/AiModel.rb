@@ -74,7 +74,7 @@ class AiModel
 		@rules.push(AiRule.new(AiRule::RULE_TYPE_RUN_OF_LENGTH, 4, AiRule::AI_ACTION_KEEP_AND_CONTINUE))
 		@rules.push(AiRule.new(AiRule::RULE_TYPE_JOKER, 1, AiRule::AI_ACTION_KEEP_AND_STOP))
 		
-		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_WINNINGS_BELOW, 32, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))
+		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_WINNINGS_BELOW, 64, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))
 		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_ROUND_BELOW, 1, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))
 		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_CARD_BELOW, 6, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))
 		@doubleRules.push(AiDoubleRule.new(AiDoubleRule::DOUBLE_RULE_TYPE_CARD_ABOVE, 9, AiDoubleRule::DOUBLE_AI_ACTION_GO_IF_TRUE))

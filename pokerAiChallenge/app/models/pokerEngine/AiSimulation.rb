@@ -8,6 +8,10 @@ class AiSimulation
 	def runSimulation(aiModel, casinoEngine, handCount, printHands=false)
 		totalPayout = 0
 		winningHands = 0;
+		doubleTries = 0; # each individual double up
+		doubleSuccesses = 0;
+		doubleOverallTries = 0; # when you went into double and left with money
+		doubleOverallSuccesses = 0;
 
 		for i in 0...handCount
 			hand = casinoEngine.startHand
@@ -26,14 +30,27 @@ class AiSimulation
 
 			if payout > 0
 				winningHands += 1
+				triedDouble = false
 
 				while payout > 0 and casinoEngine.canDoubleUp(payout) and aiModel.shouldDoubleUp(payout, casinoEngine.doubleCard, casinoEngine.doubleAttempt)
+					triedDouble = true
+					doubleTries += 1
 					casinoEngine.prepareDoubleCardIfNone
 
 					action = aiModel.getDoubleUpAction(payout, casinoEngine.doubleCard)
 					payout *= casinoEngine.performDoubleUp(action)
+
+					if payout > 0
+						doubleSuccesses += 1
+					end
 				end
-				# todo: calculate average time you win doubles
+
+				if triedDouble
+					doubleOverallTries += 1
+					if payout > 0
+						doubleOverallSuccesses += 1
+					end
+				end
 			end
 
 			totalPayout += payout
@@ -56,6 +73,10 @@ class AiSimulation
 		print (1.0*totalPayout/handCount).to_s + " average payout"
 		puts
 		print (100.0*winningHands/handCount).to_s + "% win percentage"
+		puts
+		print (100.0*doubleSuccesses/doubleTries).to_s + "% double win percentage (" + doubleSuccesses.to_s + "/" + doubleTries.to_s + ")"
+		puts
+		print (100.0*doubleOverallSuccesses/doubleOverallTries).to_s + "% double runs ended in payout (" + doubleOverallSuccesses.to_s + "/" + doubleOverallTries.to_s + ")"
 		puts
 	end
 end
