@@ -28,6 +28,10 @@ class AiSimulation
 	def doubleOverallSuccesses
 		@doubleOverallSuccesses
 	end
+
+        def handCount
+                @handCount
+        end
 	
 	def runSimulation(aiModel, casinoEngine, handCount, printHands=false)
 		@totalPayout = 0
@@ -36,6 +40,7 @@ class AiSimulation
 		@doubleSuccesses = 0;
 		@doubleOverallTries = 0; # when you went into double and left with money
 		@doubleOverallSuccesses = 0;
+                @handCount = handCount;
 
 		for i in 0...handCount
 			hand = casinoEngine.startHand
@@ -90,7 +95,7 @@ class AiSimulation
 			end
 		end
 
-		=begin
+		begin
 		print "Total payout " + totalPayout.to_s + " over " + handCount.to_s + " hands."
 		puts
 		print winningHands.to_s + " winning hands in " + handCount.to_s + " hands."
@@ -103,6 +108,6 @@ class AiSimulation
 		puts
 		print (100.0*doubleOverallSuccesses/doubleOverallTries).round(2).to_s + "% double runs ended in payout (" + doubleOverallSuccesses.to_s + "/" + doubleOverallTries.to_s + ")"
 		puts
-		=end
+		end
 	end
 end
